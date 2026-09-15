@@ -11,6 +11,7 @@
     .page { width: min(1000px, calc(100% - 40px)); margin: auto; padding: 30px 0 80px; }
     nav { display: flex; justify-content: flex-end; margin-bottom: 90px; }
     nav a { color: var(--coffee); font-size: 13px; font-weight: 800; text-decoration: none; }
+    nav a.active { color: var(--rust); }
     .brand { color: var(--coffee-dark); font-size: 15px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
     .kicker { color: var(--rust); font-size: 12px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
     h1, h2 { color: var(--coffee-dark); font-family: Georgia, serif; letter-spacing: -.05em; line-height: 1; }
@@ -29,7 +30,7 @@
 </head>
 <body>
   <main class="page">
-    <nav><span><a href="index.html">Identity</a> · <a href="espresso.html">Espresso</a> · <a href="filter.html">Filter</a> · <a href="grinder.html">Grinder</a></span></nav>
+    <nav><span><a href="index.html">Quick scan</a> | <a href="espresso.html">Espresso</a> | <a class="active" href="filter.html">Filter</a> | <a href="grinder.html">Grinder</a></span></nav>
     <div class="kicker">The filter decision tree</div>
     <h1>Good coffee. No chrome required.</h1>
     <p class="intro">Filter is the sensible route through the coffee wilderness: less expensive, easier to repeat, and still capable of making you insufferable about water.</p>
