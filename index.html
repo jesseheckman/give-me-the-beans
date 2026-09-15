@@ -188,7 +188,7 @@
         </div>
         <div class="question">
           <div class="question-title"><span>How much do you enjoy fiddling with variables?</span></div>
-          <input id="nerd" type="range" min="1" max="5" step="any" value="3">
+          <input id="nerd" type="range" min="0" max="5" step="any" value="2.5">
           <div class="range-labels"><span>Beans is beans</span><span>Explain extraction</span></div>
         </div>
         <div class="question">
@@ -223,7 +223,7 @@
     <section class="result" id="result" role="status" aria-live="polite">
       <div class="result-heading">
         <div class="section-label">02 / Result</div>
-        <h2>Your coffee identity</h2>
+        <h2>Brewing suggestion</h2>
       </div>
       <div class="avatar-slot" id="avatarSlot">
         <span id="avatarPlaceholder">Your avatar<br>goes here.</span>
@@ -231,6 +231,7 @@
       </div>
       <div>
         <h3 id="resultTitle"></h3>
+        <p id="methodRecommendation"></p>
         <p id="resultText"></p>
       </div>
     </section>
@@ -249,14 +250,23 @@
       ageSelect.appendChild(option);
     }
 
-    const formatBudget = (value) => {
-      if (Number(value) >= 5) return "€5,000";
+    const estimateBudget = (value) => {
+      if (Number(value) >= 5) return 5000;
       const position = Number(value) - 1;
       const lowerIndex = Math.min(Math.floor(position), budgetAnchors.length - 2);
       const fraction = position - lowerIndex;
       const lower = budgetAnchors[lowerIndex];
       const upper = budgetAnchors[lowerIndex + 1];
-      const amount = lower + (upper - lower) * fraction;
+      return lower + (upper - lower) * fraction;
+    };
+
+    const formatBudget = (value) => {
+      const amount = estimateBudget(value);
+      if (amount >= 5000) return "€5,000";
+      const position = Number(value) - 1;
+      const lowerIndex = Math.min(Math.floor(position), budgetAnchors.length - 2);
+      const lower = budgetAnchors[lowerIndex];
+      const upper = budgetAnchors[lowerIndex + 1];
       const tenPercentStep = (upper - lower) * 0.1;
       const roundedAmount = Math.min(upper, Math.round(amount / tenPercentStep) * tenPercentStep);
       return `€${roundedAmount.toLocaleString("en-US")}`;
@@ -271,8 +281,7 @@
 
     document.getElementById("coffeeForm").addEventListener("submit", (event) => {
       event.preventDefault();
-      const name = document.getElementById("name").value.trim();
-      const age = document.getElementById("age").value;
+      const sex = document.getElementById("sex").value;
       const time = Number(document.getElementById("time").value);
       const money = Number(document.getElementById("money").value);
       const nerd = Number(document.getElementById("nerd").value);
@@ -280,23 +289,43 @@
       const method = document.querySelector('input[name="method"]:checked').value;
       const persona = document.querySelector('input[name="persona"]:checked').value;
       const personality = window.coffeePersonality;
-      const avatarByPersona = {
-        rich: "data/woman_rich.png",
-        activist: "data/woman_alt.png",
-        cool: "data/woman_hipster.png"
+      const budgetAmount = estimateBudget(money);
+      const avatarBySexAndPersona = {
+        female: {
+          rich: "data/female_rich.png",
+          activist: "data/female_alt.png",
+          cool: "data/female_hipster.png"
+        },
+        male: {
+          rich: "data/male_rich.png",
+          activist: "data/male_alt.png",
+          cool: "data/male_hipster.png"
+        },
+        "non-binary": {
+          rich: "data/nonbin_rich.png",
+          activist: "data/nonbin_alt.png",
+          cool: "data/nonbin_hipster.png"
+        }
       };
-      let profile = nerd >= 4 ? personality.profiles.detailNerd : time <= 2 ? personality.profiles.convenience : persona === "rich" ? personality.profiles.rich : persona === "activist" ? personality.profiles.practical : personality.profiles.promising;
       let advice = milk === "yes"
         ? method === "espresso" ? personality.milkAdvice : personality.milkWithoutEspressoAdvice
         : personality.blackCoffeeAdvice;
-      if (money >= 4 && milk === "yes" && method === "espresso") advice += ` ${personality.endings.seriousBudget}`;
+      if (budgetAmount >= 2000 && milk === "yes" && method === "espresso") advice += ` ${personality.endings.seriousBudget}`;
       else if (nerd >= 4) advice += ` ${personality.endings.curious}`;
       else advice += ` ${personality.endings.simple}`;
-      document.getElementById("resultTitle").textContent = `${name}, aged ${age}, you are ${profile}.`;
+      const espressoBlocked = budgetAmount < 200 || time === 0 || nerd === 0;
+      const espressoScore = (budgetAmount >= 200 ? 2 : 0) + (time > 0 ? 1 : 0) + (nerd > 0 ? 1 : 0) + (milk === "yes" ? 2 : 0) + (method === "espresso" ? 3 : 0);
+      const filterScore = (budgetAmount < 200 ? 3 : 1) + (time === 0 ? 3 : 0) + (nerd === 0 ? 2 : 0) + (milk === "no" ? 2 : 0) + (method === "filter" ? 3 : 0);
+      const recommendedMethod = !espressoBlocked && espressoScore > filterScore ? "Espresso" : "Filter";
+      const recommendation = espressoBlocked
+        ? personality.methodRecommendations.filterBudget
+        : personality.methodRecommendations[recommendedMethod.toLowerCase()];
+      document.getElementById("resultTitle").textContent = `${recommendedMethod} is your move.`;
+      document.getElementById("methodRecommendation").textContent = `Recommendation: ${recommendedMethod}. ${recommendation}`;
       document.getElementById("resultText").textContent = advice;
       const avatarImage = document.getElementById("avatarImage");
-      avatarImage.src = avatarByPersona[persona];
-      avatarImage.alt = `${persona} coffee identity avatar`;
+      avatarImage.src = avatarBySexAndPersona[sex][persona];
+      avatarImage.alt = `${sex} ${persona} coffee identity avatar`;
       avatarImage.hidden = false;
       document.getElementById("avatarPlaceholder").hidden = true;
       const result = document.getElementById("result");
