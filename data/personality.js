@@ -2,6 +2,7 @@ window.coffeePersonality = {
   profiles: {
     detailNerd: "a detail-oriented bean counter",
     convenience: "a convenience maximalist",
+    rich: "a luxury coffee candidate",
     practical: "a sensible brewer",
     promising: "a promising coffee person"
   },

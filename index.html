@@ -28,7 +28,7 @@
       line-height: 1.5;
     }
     .page { width: min(1180px, calc(100% - 40px)); margin: auto; padding: 30px 0 80px; }
-    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 75px; }
+    .topbar { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 75px; }
     .brand { color: var(--coffee-dark); font-size: 15px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
     .topbar a { color: var(--muted); font-size: 13px; font-weight: 700; text-decoration: none; }
     .hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 70px; align-items: end; margin-bottom: 70px; }
@@ -57,17 +57,23 @@
     .choice label { display: block; padding: 12px 16px; border: 1px solid var(--line); background: var(--paper); cursor: pointer; font-weight: 750; transition: .18s ease; }
     .choice label:hover { border-color: var(--coffee); }
     .choice input:checked + label { border-color: var(--coffee-dark); background: var(--coffee-dark); color: var(--cream); }
+    .evasive-choice { transition: transform .45s ease; }
     .name-row { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: end; }
+    .age-sex-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
     input[type="text"] { width: 100%; padding: 14px 0; border: 0; border-bottom: 2px solid var(--line); background: transparent; color: var(--ink); font: inherit; outline: 0; }
     input[type="text"]:focus { border-color: var(--rust); }
     select { width: 100%; padding: 14px 0; border: 0; border-bottom: 2px solid var(--line); background: transparent; color: var(--ink); font: inherit; outline: 0; }
     select:focus { border-color: var(--rust); }
     .button { border: 0; padding: 15px 23px; background: var(--rust); color: white; cursor: pointer; font: inherit; font-weight: 850; }
     .button:hover { background: var(--coffee-dark); }
-    .result { display: none; margin-top: 24px; padding: 25px; background: var(--green); border-left: 5px solid var(--coffee); }
-    .result.visible { display: block; }
+    .result { display: none; grid-template-columns: 190px 1fr; gap: 28px; align-items: center; margin-top: 24px; padding: 25px; background: var(--green); border-left: 5px solid var(--coffee); }
+    .result.visible { display: grid; }
+    .result-heading { grid-column: 1 / -1; }
+    .result-heading h2 { margin: 7px 0 0; }
     .result h3 { margin-bottom: 8px; }
     .result p { max-width: 760px; margin-bottom: 0; }
+    .avatar-slot { display: grid; min-height: 280px; place-items: center; padding: 15px; color: var(--coffee); font-family: Georgia, serif; font-size: 18px; line-height: 1.1; text-align: center; }
+    .avatar-image { display: block; width: 100%; height: 280px; object-fit: contain; }
     .recommendation { margin-top: 85px; }
     .section-intro { display: flex; justify-content: space-between; gap: 30px; align-items: end; margin-bottom: 27px; }
     .section-intro h2 { margin: 7px 0 0; }
@@ -99,7 +105,11 @@
       .hero { grid-template-columns: 1fr; gap: 30px; margin-bottom: 45px; }
       .stamp { max-width: 300px; }
       .name-row, .tools-grid { grid-template-columns: 1fr; }
+      .age-sex-row { grid-template-columns: 1fr; gap: 20px; }
       .button { width: 100%; }
+      .result { grid-template-columns: 1fr; }
+      .avatar-slot { min-height: 180px; }
+      .avatar-image { height: 180px; }
       .section-intro { display: block; }
       .section-intro p { margin-top: 16px; }
       .tree-grid { grid-template-columns: 1fr; }
@@ -111,23 +121,24 @@
 <body>
   <main class="page">
     <nav class="topbar">
-      <div class="brand">Give me the beans</div>
       <div>
-        <a href="#decision-trees">Skip to the arguments</a>
+        <a href="index.html">Identity</a>
         <span aria-hidden="true"> · </span>
-        <a href="https://github.com/jesseheckman/give-me-the-beans/blob/main/index.html" target="_blank" rel="noreferrer">View page code</a>
+        <a href="espresso.html">Espresso</a>
         <span aria-hidden="true"> · </span>
-        <a href="https://github.com/jesseheckman/give-me-the-beans/blob/main/data/personality.js" target="_blank" rel="noreferrer">View personality data</a>
+        <a href="filter.html">Filter</a>
+        <span aria-hidden="true"> · </span>
+        <a href="grinder.html">Grinder</a>
       </div>
     </nav>
 
     <header class="hero">
       <div>
         <div class="kicker">A coffee decision tree for adults</div>
-        <h1>Choose your beans. Who needs reasons when you've got beans.</h1>
+        <h1>Choose your beans. Avoid the fuzz.</h1>
         <p class="hero-copy">A short interrogation to determine what you should brew, what you should buy, and which expensive mistake you are currently flirting with.</p>
       </div>
-      <aside class="stamp">Coffee is a hobby until you start weighing the water.<strong>Then it is a personality.</strong></aside>
+      <aside class="stamp">I chose somethin' else. And the reasons? There are no reasons. <strong>Who needs reasons when you've got beans.</strong></aside>
     </header>
 
     <section class="card quiz" aria-labelledby="quiz-title">
@@ -141,31 +152,50 @@
           <div class="name-row"><input id="name" type="text" placeholder="Your name, presumably" autocomplete="given-name" required><span class="hint">Required for the paperwork.</span></div>
         </div>
         <div class="question">
-          <div class="question-title"><span>How old are you?</span></div>
-          <select id="age" required aria-label="Your age">
-            <option value="" selected disabled>Choose your age</option>
-          </select>
+          <div class="age-sex-row">
+            <label>
+              <strong>How old are you?</strong>
+              <select id="age" required aria-label="Your age">
+                <option value="" selected disabled>Choose your age</option>
+              </select>
+            </label>
+            <label>
+              <strong>What is your sex?</strong>
+              <select id="sex" required aria-label="Your sex">
+                <option value="" selected disabled>Choose an option</option>
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+                <option value="non-binary">Non-binary</option>
+              </select>
+            </label>
+          </div>
         </div>
         <div class="question">
-          <div class="question-title"><span>How much time do you have in the morning?</span></div>
-          <input id="time" type="range" min="0" max="3" step="any" value="1">
+          <div class="question-title"><span>How much time do you want to spend on making coffee?</span></div>
+          <input id="time" type="range" min="0" max="3" step="any" value="1.5">
           <div class="range-labels"><span>None</span><span>A minute or so</span><span>3 minutes</span><span>I'll treat it as therapy</span></div>
         </div>
         <div class="question">
-          <div class="question-title"><span>How much money are you willing to turn into coffee equipment?</span><span class="score"><span id="moneyValue">3</span> / 5</span></div>
-          <input id="money" type="range" min="1" max="5" value="3">
-          <div class="range-labels"><span>Reasonable</span><span>Make it chrome</span></div>
+          <div class="question-title"><span>What is your budget?</span><span class="score"><span id="moneyValue">€1,000</span></span></div>
+          <input id="money" type="range" min="1" max="5" step="any" value="3">
+          <div class="range-labels">
+            <span>&lt;100€</span>
+            <span>500€</span>
+            <span>1000€</span>
+            <span>2000€</span>
+            <span>&gt;5000€</span>
+          </div>
         </div>
         <div class="question">
-          <div class="question-title"><span>How much do you enjoy fiddling with variables?</span><span class="score"><span id="nerdValue">3</span> / 5</span></div>
-          <input id="nerd" type="range" min="1" max="5" value="3">
-          <div class="range-labels"><span>Beans are beans</span><span>Explain extraction</span></div>
+          <div class="question-title"><span>How much do you enjoy fiddling with variables?</span></div>
+          <input id="nerd" type="range" min="1" max="5" step="any" value="3">
+          <div class="range-labels"><span>Beans is beans</span><span>Explain extraction</span></div>
         </div>
         <div class="question">
           <div class="question-title"><span>Do you drink milk-based coffee?</span></div>
-          <p class="hint">Be honest. We are listening. The espresso machine lobby can wait.</p>
+          <p class="hint">Be honest..</p>
           <div class="choice-row">
-            <div class="choice"><input id="milk-yes" type="radio" name="milk" value="yes" required><label for="milk-yes">Yes, frequently</label></div>
+            <div class="choice evasive-choice" id="milk-yes-choice"><input id="milk-yes" type="radio" name="milk" value="yes" required><label for="milk-yes">Yes, frequently</label></div>
             <div class="choice"><input id="milk-no" type="radio" name="milk" value="no"><label for="milk-no">No, black coffee</label></div>
           </div>
         </div>
@@ -179,65 +209,38 @@
           </div>
         </div>
         <div class="question">
-          <div class="question-title"><span>Pick your least irritating identity.</span></div>
+          <div class="question-title"><span>How do you like to be seen?</span></div>
           <div class="choice-row">
-            <div class="choice"><input id="practical" type="radio" name="persona" value="practical" required><label for="practical">Practical</label></div>
-            <div class="choice"><input id="curious" type="radio" name="persona" value="curious"><label for="curious">Curious</label></div>
-            <div class="choice"><input id="obsessed" type="radio" name="persona" value="obsessed"><label for="obsessed">Already obsessed</label></div>
+            <div class="choice"><input id="rich" type="radio" name="persona" value="rich" required><label for="rich">Rich</label></div>
+            <div class="choice"><input id="activist" type="radio" name="persona" value="activist"><label for="activist">Activist</label></div>
+            <div class="choice"><input id="cool" type="radio" name="persona" value="cool"><label for="cool">Cool</label></div>
           </div>
         </div>
         <button class="button" type="submit">Tell me what to do</button>
       </form>
-      <div class="result" id="result" role="status" aria-live="polite">
+    </section>
+
+    <section class="result" id="result" role="status" aria-live="polite">
+      <div class="result-heading">
+        <div class="section-label">02 / Result</div>
+        <h2>Your coffee identity</h2>
+      </div>
+      <div class="avatar-slot" id="avatarSlot">
+        <span id="avatarPlaceholder">Your avatar<br>goes here.</span>
+        <img id="avatarImage" class="avatar-image" alt="" hidden>
+      </div>
+      <div>
         <h3 id="resultTitle"></h3>
         <p id="resultText"></p>
       </div>
     </section>
 
-    <section class="recommendation" id="decision-trees" aria-labelledby="trees-title">
-      <div class="section-intro"><div><div class="section-label">02 / The verdicts</div><h2 id="trees-title">Pick a lane.</h2></div><p>Four routes through the coffee wilderness. None of them require a podcast.</p></div>
-      <div class="tabs" role="tablist" aria-label="Coffee methods">
-        <button class="tab active" role="tab" aria-selected="true" aria-controls="espresso-panel" data-tab="espresso">Espresso</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="filter-panel" data-tab="filter">Filter</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="v60-panel" data-tab="v60">V60</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="tools-panel" data-tab="tools">Buy / do not buy</button>
-      </div>
-      <div class="tab-panel active" id="espresso-panel" role="tabpanel">
-        <div class="tree-grid">
-          <article class="tree-card"><div class="number">01 / START HERE</div><h3>Do you want café drinks?</h3><p>If yes, accept that steaming milk is a skill and your first attempts will look like wet paint.</p></article>
-          <article class="tree-card"><div class="number">02 / THE HARDWARE</div><h3>Milk on the menu?</h3><p>Then invest in a dual boiler. A single boiler can do it, but so can a bicycle with one pedal.</p></article>
-          <article class="tree-card"><div class="number">03 / THE BEANS</div><h3>Keep it fresh.</h3><p>Buy a good grinder before an expensive machine. Espresso does not forgive optimism or stale beans.</p></article>
-        </div>
-        <div class="verdict"><strong>Espresso verdict:</strong> Buy the grinder first. If milk drinks are non-negotiable, make it a dual boiler and stop pretending the thermoblock is a lifestyle choice.</div>
-      </div>
-      <div class="tab-panel" id="filter-panel" role="tabpanel">
-        <div class="tree-grid">
-          <article class="tree-card"><div class="number">01 / EASY WIN</div><h3>Want clarity?</h3><p>Choose a light to medium roast and let the cup taste like something other than charcoal.</p></article>
-          <article class="tree-card"><div class="number">02 / THE METHOD</div><h3>Need reliable coffee?</h3><p>Get a simple brewer, a scale, and a kettle. Three things. We are not building a spacecraft.</p></article>
-          <article class="tree-card"><div class="number">03 / THE RATIO</div><h3>Start at 1:16.</h3><p>One gram of coffee for every 16 grams of water. Adjust after tasting, not while panicking.</p></article>
-        </div>
-        <div class="verdict"><strong>Filter verdict:</strong> The sensible gateway drug. It is inexpensive, delicious, and still leaves money for beans.</div>
-      </div>
-      <div class="tab-panel" id="v60-panel" role="tabpanel">
-        <div class="tree-grid">
-          <article class="tree-card"><div class="number">01 / BE HONEST</div><h3>Do you enjoy precision?</h3><p>The V60 rewards attention. It also remembers every time you poured too fast.</p></article>
-          <article class="tree-card"><div class="number">02 / THE POUR</div><h3>Bloom, then pour.</h3><p>Wet all the grounds first. Wait 30–45 seconds. Continue in slow, controlled circles.</p></article>
-          <article class="tree-card"><div class="number">03 / THE FIX</div><h3>Sour or bitter?</h3><p>Sour means more extraction. Bitter means less. Grind and pour accordingly. Yes, it really is that simple.</p></article>
-        </div>
-        <div class="verdict"><strong>V60 verdict:</strong> Ideal for the curious person who thinks “one more variable” sounds like a relaxing Saturday.</div>
-      </div>
-      <div class="tab-panel" id="tools-panel" role="tabpanel">
-        <div class="tools-grid">
-          <article class="tools-card buy"><h3>Buy these.</h3><ul><li>A burr grinder with actual adjustment steps</li><li>A scale with a timer, because counting is not a personality</li><li>Fresh beans with a roast date</li><li>A kettle you can control, if you brew filter</li></ul></article>
-          <article class="tools-card skip"><h3>Do not buy these yet.</h3><ul><li>A $2,000 machine with a $40 grinder</li><li>Every brewer that goes viral this month</li><li>Flavoured syrup pretending to be a tasting note</li><li>More storage jars than you have coffee</li></ul></article>
-        </div>
-      </div>
-    </section>
     <footer>Built for people who want better coffee, not another identity crisis.</footer>
   </main>
   <script src="data/personality.js"></script>
   <script>
-    const values = [["money", "moneyValue"], ["nerd", "nerdValue"]];
+    const values = [["money", "moneyValue"]];
+    const budgetAnchors = [100, 500, 1000, 2000, 5000];
     const ageSelect = document.getElementById("age");
     for (let age = 30; age <= 100; age += 1) {
       const option = document.createElement("option");
@@ -245,9 +248,25 @@
       option.textContent = age;
       ageSelect.appendChild(option);
     }
+
+    const formatBudget = (value) => {
+      if (Number(value) >= 5) return "€5,000";
+      const position = Number(value) - 1;
+      const lowerIndex = Math.min(Math.floor(position), budgetAnchors.length - 2);
+      const fraction = position - lowerIndex;
+      const lower = budgetAnchors[lowerIndex];
+      const upper = budgetAnchors[lowerIndex + 1];
+      const amount = lower + (upper - lower) * fraction;
+      const tenPercentStep = (upper - lower) * 0.1;
+      const roundedAmount = Math.min(upper, Math.round(amount / tenPercentStep) * tenPercentStep);
+      return `€${roundedAmount.toLocaleString("en-US")}`;
+    };
+
     values.forEach(([inputId, valueId]) => {
       const input = document.getElementById(inputId);
-      input.addEventListener("input", () => { document.getElementById(valueId).textContent = input.value; });
+      input.addEventListener("input", () => {
+        document.getElementById(valueId).textContent = inputId === "money" ? formatBudget(input.value) : input.value;
+      });
     });
 
     document.getElementById("coffeeForm").addEventListener("submit", (event) => {
@@ -261,7 +280,12 @@
       const method = document.querySelector('input[name="method"]:checked').value;
       const persona = document.querySelector('input[name="persona"]:checked').value;
       const personality = window.coffeePersonality;
-      let profile = nerd >= 4 ? personality.profiles.detailNerd : time <= 2 ? personality.profiles.convenience : persona === "practical" ? personality.profiles.practical : personality.profiles.promising;
+      const avatarByPersona = {
+        rich: "data/woman_rich.png",
+        activist: "data/woman_alt.png",
+        cool: "data/woman_hipster.png"
+      };
+      let profile = nerd >= 4 ? personality.profiles.detailNerd : time <= 2 ? personality.profiles.convenience : persona === "rich" ? personality.profiles.rich : persona === "activist" ? personality.profiles.practical : personality.profiles.promising;
       let advice = milk === "yes"
         ? method === "espresso" ? personality.milkAdvice : personality.milkWithoutEspressoAdvice
         : personality.blackCoffeeAdvice;
@@ -270,23 +294,34 @@
       else advice += ` ${personality.endings.simple}`;
       document.getElementById("resultTitle").textContent = `${name}, aged ${age}, you are ${profile}.`;
       document.getElementById("resultText").textContent = advice;
+      const avatarImage = document.getElementById("avatarImage");
+      avatarImage.src = avatarByPersona[persona];
+      avatarImage.alt = `${persona} coffee identity avatar`;
+      avatarImage.hidden = false;
+      document.getElementById("avatarPlaceholder").hidden = true;
       const result = document.getElementById("result");
       result.classList.add("visible");
       result.scrollIntoView({ behavior: "smooth", block: "center" });
     });
 
-    document.querySelectorAll(".tab").forEach((tab) => {
-      tab.addEventListener("click", () => {
-        document.querySelectorAll(".tab").forEach((item) => {
-          item.classList.remove("active");
-          item.setAttribute("aria-selected", "false");
-        });
-        document.querySelectorAll(".tab-panel").forEach((panel) => panel.classList.remove("active"));
-        tab.classList.add("active");
-        tab.setAttribute("aria-selected", "true");
-        document.getElementById(`${tab.dataset.tab}-panel`).classList.add("active");
+    const evasiveChoice = document.getElementById("milk-yes-choice");
+    let milkSelected = false;
+    document.querySelectorAll('input[name="milk"]').forEach((input) => {
+      input.addEventListener("change", () => {
+        milkSelected = true;
+        evasiveChoice.style.transform = "translate(0, 0)";
       });
     });
+
+    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      evasiveChoice.addEventListener("mouseenter", () => {
+        if (milkSelected) return;
+        const x = Math.round((Math.random() * 2 - 1) * 180);
+        const y = Math.round((Math.random() * 2 - 1) * 60);
+        evasiveChoice.style.transform = `translate(${x}px, ${y}px)`;
+      });
+    }
+
   </script>
 </body>
 </html>
